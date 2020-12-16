@@ -1,5 +1,10 @@
 package bitlinks
 
+/*
+   This package provides the data structures and a single public API to retrieve all bitly links
+   associated with the owner of the access token.
+*/
+
 import (
 	"encoding/json"
 	"fmt"
@@ -48,6 +53,7 @@ type Bitlink struct {
 	Pagination Page   `json:"pagination"`
 }
 
+// The only function in this package, this returns a list of all the bitly links owned by the user.
 func GetBitlinks(groupId, token string) []string {
 	endpoint := fmt.Sprintf("https://api-ssl.bitly.com/v4/groups/%s/bitlinks", groupId)
 	bytes := httphelper.GetBytes(token, endpoint)

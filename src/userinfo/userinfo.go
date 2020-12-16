@@ -1,11 +1,13 @@
 package userinfo
 
+/*
+	This package queries the /user endpoint to determine the group ID to use for further queries.
+*/
+
 import (
 	"encoding/json"
-	"fmt"
-	"io/ioutil"
-	"net/http"
-	"net/url"
+
+	httphelper "../http"
 )
 
 var endpoint = "https://api-ssl.bitly.com/v4/user"
@@ -28,31 +30,10 @@ type Userinfo struct {
 	Group     string          `json:"default_group_guid"`
 }
 
+// The only public function in this package, this is used to determine the guid of the user in question.
 func GetUserinfo(token string) Userinfo {
-	reqUrl, _ := url.Parse(endpoint)
-
-	tokenString := fmt.Sprintf("Bearer %s", token)
-
-	req := &http.Request{
-		URL: reqUrl,
-		Header: map[string][]string{
-			"Authorization": {tokenString},
-			"Content-type":  {"application/json"},
-		},
-	}
-
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		panic(err)
-	}
-
-	bytes, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		panic(err)
-	}
-
 	var userinfo Userinfo
-	if err := json.Unmarshal(bytes, &userinfo); err != nil {
+	if err := json.Unmarshal(httphelper.GetBytes(token, endpoint), &userinfo); err != nil {
 		panic(err)
 	}
 

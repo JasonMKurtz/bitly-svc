@@ -14,7 +14,10 @@ import (
 var app server.Routes
 
 func main() {
+	// The port that our endpoint will be accessible on.
 	app = server.Routes{Port: "5000"}
+
+	// All endpoints that we will serve. In this case, just /mystats.
 	app.Routes = []server.Route{
 		server.Route{Route: "/mystats", Handler: StatsEndpoint},
 	}
@@ -23,7 +26,8 @@ func main() {
 }
 
 type StatResponse struct {
-	Stats []metrics.MetricResponse
+	Stats     []metrics.MetricResponse
+	Timeframe string
 }
 
 func StatsEndpoint(w http.ResponseWriter, req *http.Request, route server.Route) {
@@ -46,7 +50,7 @@ func StatsEndpoint(w http.ResponseWriter, req *http.Request, route server.Route)
 		statsResp = append(statsResp, avg)
 	}
 
-	stats := StatResponse{Stats: statsResp}
+	stats := StatResponse{Stats: statsResp, Timeframe: "30d"}
 	resp, _ := json.Marshal(stats)
 
 	w.Write(resp)
